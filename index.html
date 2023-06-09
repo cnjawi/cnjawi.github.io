@@ -1,0 +1,300 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>cnjawi&#39;s blog</title>
+
+  
+  <meta name="author" content="cnjawi">
+  
+
+  
+
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  
+
+  <meta property="og:site_name" content="cnjawi&#39;s blog"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="cnjawi&#39;s blog" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">cnjawi&#39;s blog</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2023/06/09/Arch-Configuration-Guide/"><span>Arch 配置向导</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2023/06/09/Arch-Configuration-Guide/" rel="bookmark">
+        <time class="entry-date published" datetime="2023-06-09T08:04:34.000Z">
+          2023-06-09
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>本篇是 <code>Arch Linux 安装拾遗</code> 的后续，记录配置新系统到可以日用状态的过程。同样是 <a target="_blank" rel="noopener" href="https://wiki.archlinuxcn.org/wiki/%E9%A6%96%E9%A1%B5">ArchWiki</a> 的一些补充，每块内容都需配合对应的 ArchWiki 章节使用。</p>
+<h2 id="软件源"><a href="#软件源" class="headerlink" title="软件源"></a>软件源</h2><p>archlinuxcn提供了很多不包括在默认源中的软件，在<code>/etc/pacman.conf</code>中添加：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[archlinuxcn]</span><br><span class="line">Server = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/$arch</span><br></pre></td></tr></table></figure>
+
+<p>保存退出，接着</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo pacman -Sy</span><br><span class="line">sudo pacman -S archlinuxcn-keyring    #添加公钥，公钥问题会导致无法安装软件</span><br></pre></td></tr></table></figure>
+
+<p>以上步骤完成后就可以直接安装 yay 了</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo pacman -S yay</span><br></pre></td></tr></table></figure>
+
+<h2 id="图形界面"><a href="#图形界面" class="headerlink" title="图形界面"></a>图形界面</h2><p>我选择使用 KDE 作为桌面环境。KDE 目前对 wayland 的支持尚未完善彻底，经常会出现一些渲染错误，还是有必要装上 xorg, 可通过 sddm 切换</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo pacman -S xorg wayland plasma-wayland-session</span><br><span class="line">sudo pacman -S plasma-desktop kde-graphics-meta kde-multimedia-meta kde-system-meta kde-utilities-meta sddm sddm-kcm   # kde相关包，排除游戏和教育两个没用的</span><br><span class="line">sudo systemctl enable sddm.service   # 开机时进入sddm</span><br></pre></td></tr></table></figure>
+<p>KDE 和 sddm 的相关美化参考 wiki 即可。</p>
+<p>接下来解决中文字体和输入法，字体可以直接从Windows系统中复制，参见<a target="_blank" rel="noopener" href="https://wiki.archlinuxcn.org/wiki/%E5%BE%AE%E8%BD%AF%E5%AD%97%E4%BD%93#%E4%BD%BF%E7%94%A8_Windows_%E5%88%86%E5%8C%BA%E4%B8%AD%E7%9A%84%E5%AD%97%E4%BD%93">微软字体</a>，另外编程用的Cascadia系列虽然可以在源中找到，还是建议去github上下载，然后手动添加，因为这样可以获得字体的静态版本。</p>
+<p>输入法中 fcitx5 用着已经很舒服了。安装以下包</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">pacman -Q | grep fcitx</span><br><span class="line">fcitx5 5.0.23-2</span><br><span class="line">fcitx5-chinese-addons 5.0.17-1</span><br><span class="line">fcitx5-configtool 5.0.17-1</span><br><span class="line">fcitx5-gtk 5.0.23-1</span><br><span class="line">fcitx5-lua 5.0.10-1</span><br><span class="line">fcitx5-material-color 0.2.1-1</span><br><span class="line">fcitx5-pinyin-sougou 20210320-1  # 这个通过AUR安装</span><br><span class="line">fcitx5-pinyin-zhwiki 1:0.2.4.20230605-1</span><br><span class="line">fcitx5-qt 5.0.17-5</span><br></pre></td></tr></table></figure>
+<p>然后通过设置配置一下即可。主题的设置略复杂，参考<a target="_blank" rel="noopener" href="https://github.com/hosxy/Fcitx5-Material-Color">Fcitx5-Material-Color</a>，在配置文件中写入</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Vertical Candidate List=False</span><br><span class="line">PerScreenDPI=True</span><br><span class="line">Font=&quot;Microsoft YaHei 14&quot;</span><br><span class="line">Theme=Material-Color-Indigo</span><br></pre></td></tr></table></figure>
+
+<p>至此，终于可以把<code>/etc/locale.conf</code>改为<code>LANG=zh_CN.UTF-8</code>了。同时需在设置中更改 Region。</p>
+<h2 id="zsh"><a href="#zsh" class="headerlink" title="zsh"></a>zsh</h2><p>对于不写 shell 脚本的用户来说，bash、zsh、fish 之间区别感知并不强。我使用 zsh 的是因为它自带比 bash 更强的补全功能，并且很方便做一些简单配置。</p>
+<p>实际上 <code>Arch Linux 安装拾遗</code> 中创建新用户时就使用了 zsh 作为默认 shell，走完一遍配置界面后，已生成了 .zshrc 文件。</p>
+<p>使用 <a target="_blank" rel="noopener" href="https://github.com/romkatv/powerlevel10k">powerlevel10k</a> 代替 zsh 的 prompt。使用前确保当前终端字体已设置为 <code>Cascadia Code PL</code>，安装参照 README 即可。</p>
+<p>通过 pacman 安装 <code>zsh-syntax-highlighting</code> 包，再执行 <code>pkgfile --update</code>，完成后在 <code>.zshrc</code> 写入</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Enable fish-style syntax highlighting</span></span><br><span class="line">source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Enable <span class="string">&quot;Command Not Found&quot;</span> hook provided by pkgfile</span></span><br><span class="line">source /usr/share/doc/pkgfile/command-not-found.zsh</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Custom settings</span></span><br><span class="line">alias cls=clear</span><br></pre></td></tr></table></figure>
+<p>这时 zsh 的功能对我来说已经够用了。</p>
+<h2 id="双系统引导"><a href="#双系统引导" class="headerlink" title="双系统引导"></a>双系统引导</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo pacman -S os-prober grub-customizer</span><br><span class="line">sudo os-prober  # 自动探查Windows并添加到引导菜单中</span><br></pre></td></tr></table></figure>
+<p>grub-customizer 是一个调整 grub 设置的 GUI 程序，通过它设置 grub 的等待时间、默认启动项和主题（我使用的是Vimix）</p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>虽然没有 SWAP 不影响正常使用，但是少了又感觉缺点什么，根据 ArchWiki 配置一下就好。</p>
+<p>通过pacman安装的常用软件：chromium, clang, neofetch, cmake</p>
+<p>通过yay安装的：octopi，visual-studio-code-bin</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2023/06/09/Arch-Installation-Supplement/"><span>Arch Linux 安装拾遗</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2023/06/09/Arch-Installation-Supplement/" rel="bookmark">
+        <time class="entry-date published" datetime="2023-06-09T08:02:43.000Z">
+          2023-06-09
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>命令行纯手工安装是 Archlinux 的一大特色，为此，官方 wiki 提供了质量很高的 <a target="_blank" rel="noopener" href="https://wiki.archlinuxcn.org/wiki/%E5%AE%89%E8%A3%85%E6%8C%87%E5%8D%97">Installation Guide</a>，指导用户从 LiveCD 这个脚手架开始，逐步把系统安装到实机上。然而 Installation Guide 并不会覆盖所有细节问题，需把实际安装时所做的一些补充和改进记录下来。注意这份文档不包含安装的完整步骤，仅记录不同于 Installation Guide 的部分，作辅助之用。</p>
+<p>开始前，先确保硬盘上已预留一块空闲区域作为 Arch 的根分区，并且EFI系统分区足够大(512MB以上比较保险)，在 BIOS 中关闭 Secure Boot 安全启动选项。以免后续安装无法正常进行。</p>
+<h2 id="准备启动盘"><a href="#准备启动盘" class="headerlink" title="准备启动盘"></a>准备启动盘</h2><p>在<a target="_blank" rel="noopener" href="https://archlinux.org/download/">下载</a>页面下翻，找到China条目下的镜像源，选一个打开后下载iso文件。</p>
+<p>通过<a target="_blank" rel="noopener" href="https://www.ventoy.net/cn/">Ventoy</a>工具制作启动盘，它会把U盘格式化为两个分区，一个存放UEFI相关文件，另一个可以当正常U盘使用，工具会自动识别其中的镜像文件，并在启动时列出以供用户选择。所以只须把iso文件复制到此处即可。</p>
+<h2 id="终端字体"><a href="#终端字体" class="headerlink" title="终端字体"></a>终端字体</h2><p>默认字体偏小，通过以下方法重设</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ls /usr/share/kbd/consolefonts/   # 列出所有可用字体</span><br><span class="line">setfont ter-122b    # 使用ter系列大小为122的粗体，具体大小的选择视设备而定</span><br></pre></td></tr></table></figure>
+
+<p>安装好的系统内可选的命令行字体很少，所以记得在完成挂载后，通过</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp /usr/share/kbd/consolefonts/&lt;使用的字体&gt; /mnt/usr/share/kbd/consolefonts/</span><br></pre></td></tr></table></figure>
+
+<p>复制字体文件，以便在新系统内操作时看得舒服</p>
+<h2 id="联网"><a href="#联网" class="headerlink" title="联网"></a>联网</h2><p>联网前，先禁用reflector服务。<a target="_blank" rel="noopener" href="https://wiki.archlinuxcn.org/wiki/Reflector">Reflector</a>可以筛选出最新的镜像并按速度排序。然而在国内并不好用，而且如果出现网络相关的问题，这个服务会一直输出日志，影响命令行的使用。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop reflector.service</span><br></pre></td></tr></table></figure>
+
+<p>然后按 wiki 的步骤联网。对于有线网络和虚拟机，一般直接可以联网，wifi则使用<code>iwctl</code>，具体方法参见<a target="_blank" rel="noopener" href="https://wiki.archlinuxcn.org/wiki/Iwd#iwctl">iwd - ArchWiki</a>。如果无法正常连接WiFi，可以用手机的usb共享网络功能救急。</p>
+<h3 id="使用ssh-可选"><a href="#使用ssh-可选" class="headerlink" title="使用ssh(可选)"></a>使用ssh(可选)</h3><p>  直接在实机上操作并不方便(没有cv大法)，如果局域网内有其他可用设备，可以使用ssh远程连接</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">passwd  # 设置root密码</span><br><span class="line">systemctl start sshd  # 开启ssh服务</span><br><span class="line">ip -brief address  # 确认ip地址&lt;ip_address&gt;</span><br></pre></td></tr></table></figure>
+
+<p>  接着在将要使用的终端上输入</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ssh root@&lt;ip_address&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>  一通操作就连上了</p>
+<h2 id="硬盘分区"><a href="#硬盘分区" class="headerlink" title="硬盘分区"></a>硬盘分区</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">lsblk # 查看硬盘信息，fdisk -l 输出内容太多，反而不如这个方便</span><br><span class="line">cfdisk /dev/&lt;要操作的设备&gt; # 有类图形界面的分区工具，比fdisk易用</span><br></pre></td></tr></table></figure>
+
+<p>以已经安装Windows的电脑为例，esp分区已经存在，无需创建，cfdisk只用新建一个类型为Linux Filesystem的分区。</p>
+<p>然后参照 Installation Guide 进行格式化和挂载即可。</p>
+<h2 id="设置镜像源"><a href="#设置镜像源" class="headerlink" title="设置镜像源"></a>设置镜像源</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -L -o /etc/pacman.d/mirrorlist &quot;https://www.archlinux.org/mirrorlist/?country=CN&quot; # 下载中国镜像源文件</span><br><span class="line">vim /etc/pacman.d/mirrorlist  # 删除&#x27;#&#x27;以启用镜像源</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装系统"><a href="#安装系统" class="headerlink" title="安装系统"></a>安装系统</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">pacstrap -K /mnt base linux linux-firmware base-devel networkmanager efibootmgr grub amd-ucode zsh neovim</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">前三个为基本软件包</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">base-devel 包含 gcc binutils 等开发工具</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">networkmanager用于安装完成后联网</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">efibootmgr grub 用于之后建立引导</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在物理机上安装可根据cpu型号加上amd-ucode或intel-ucode</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">zsh neovim 分别是终端和编辑器</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="网络配置"><a href="#网络配置" class="headerlink" title="网络配置"></a>网络配置</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo &#x27;Arch&#x27; &gt; /etc/hostname  # 写入主机名 </span><br></pre></td></tr></table></figure>
+
+<p>接下来选择网络管理器的一步非常关键，Installation Guide 指向的<a target="_blank" rel="noopener" href="https://wiki.archlinuxcn.org/wiki/%E7%BD%91%E7%BB%9C%E9%85%8D%E7%BD%AE#%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86%E5%99%A8">网络配置</a>页列出了可用的软件，主要是 NetworkManager 和 systemd-networkd，但是没有详细指导用户如何选择。询问 chatGPT，前者提供了对WiFi、蓝牙、dhcp等的支持，并与KDE·、Gnome等桌面环境结合得更好，而后者更为轻量，主要面向服务器端。启用前者，同时为了避免冲突，还需禁用后者</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">systemctl enable NetworkManager.service</span><br><span class="line">systemctl disable systemd-networkd.service</span><br><span class="line">systemctl disable systemd-resolved.service</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">如果存在dhcpcd，一并禁用</span></span><br><span class="line">systemctl disable dhcpcd.service</span><br></pre></td></tr></table></figure>
+
+<h2 id="用户配置"><a href="#用户配置" class="headerlink" title="用户配置"></a>用户配置</h2><p>这步 Installation Guide 中放在安装完建议阅读部分，也可以提前做</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">passwd   # 设置root密码</span><br><span class="line">SUDO_EDITOR=nvim visudo  # 删除‘%wheel ALL=(ALL) ALL’前的注释</span><br><span class="line">useradd -m -G wheel -s /bin/zsh cnjawi    # 新建用户</span><br><span class="line">passwd cnjawi         # 设置密码</span><br></pre></td></tr></table></figure>
+
+<p>关于<code>wheel</code>用户组的介绍，参见<a target="_blank" rel="noopener" href="https://sysin.org/blog/linux-root/">linux-root</a>。</p>
+<h2 id="安装引导管理程序"><a href="#安装引导管理程序" class="headerlink" title="安装引导管理程序"></a>安装引导管理程序</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">grub-install --target=x86_64-efi --efi-directory=/boot  # 安装grub到ESP分区</span><br><span class="line">grub-mkconfig -o /boot/grub/grub.cfg   # 生成配置文件</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装后操作"><a href="#安装后操作" class="headerlink" title="安装后操作"></a>安装后操作</h2><p>由于使用 zsh 作为默认 shell, 登陆后会进入 zsh 的配置界面，其中的选项基本保持默认即可。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nmtui       # 配置无线网，由于使用 NetworkManager, iwctl无效</span><br><span class="line">sudo pacman -Syu      # 更新</span><br></pre></td></tr></table></figure>
+
+<p>更多配置移步 <code>Arch Linux 配置向导</code></p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2023/06/09/hello-world/"><span>Hello World</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2023/06/09/hello-world/" rel="bookmark">
+        <time class="entry-date published" datetime="2023-06-09T07:59:21.974Z">
+          2023-06-09
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+
+<nav class="pagination">
+  
+  
+</nav>
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2023 cnjawi
+    
+  </p>
+</footer>
+    
+    
+  </div>
+</div>
+</body>
+</html>

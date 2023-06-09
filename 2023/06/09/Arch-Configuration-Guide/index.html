@@ -1,0 +1,161 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Arch 配置向导 | cnjawi&#39;s blog</title>
+
+  
+  <meta name="author" content="cnjawi">
+  
+
+  
+  <meta name="description" content="本篇是 Arch Linux 安装拾遗 的后续，记录配置新系统到可以日用状态的过程。同样是 ArchWiki 的一些补充，每块内容都需配合对应的 ArchWiki 章节使用。
+软件源archlinuxcn提供了很多不包括在默认源中的软件，在/etc/pacman.conf中添加：
+12[archli">
+  
+
+  
+  
+  <meta name="keywords" content="">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Arch 配置向导"/>
+
+  <meta property="og:site_name" content="cnjawi&#39;s blog"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="cnjawi&#39;s blog" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">cnjawi&#39;s blog</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>Arch 配置向导</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2023/06/09/Arch-Configuration-Guide/" rel="bookmark">
+        <time class="entry-date published" datetime="2023-06-09T08:04:34.000Z">
+          2023-06-09
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>本篇是 <code>Arch Linux 安装拾遗</code> 的后续，记录配置新系统到可以日用状态的过程。同样是 <a target="_blank" rel="noopener" href="https://wiki.archlinuxcn.org/wiki/%E9%A6%96%E9%A1%B5">ArchWiki</a> 的一些补充，每块内容都需配合对应的 ArchWiki 章节使用。</p>
+<h2 id="软件源"><a href="#软件源" class="headerlink" title="软件源"></a>软件源</h2><p>archlinuxcn提供了很多不包括在默认源中的软件，在<code>/etc/pacman.conf</code>中添加：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[archlinuxcn]</span><br><span class="line">Server = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/$arch</span><br></pre></td></tr></table></figure>
+
+<p>保存退出，接着</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo pacman -Sy</span><br><span class="line">sudo pacman -S archlinuxcn-keyring    #添加公钥，公钥问题会导致无法安装软件</span><br></pre></td></tr></table></figure>
+
+<p>以上步骤完成后就可以直接安装 yay 了</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo pacman -S yay</span><br></pre></td></tr></table></figure>
+
+<h2 id="图形界面"><a href="#图形界面" class="headerlink" title="图形界面"></a>图形界面</h2><p>我选择使用 KDE 作为桌面环境。KDE 目前对 wayland 的支持尚未完善彻底，经常会出现一些渲染错误，还是有必要装上 xorg, 可通过 sddm 切换</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo pacman -S xorg wayland plasma-wayland-session</span><br><span class="line">sudo pacman -S plasma-desktop kde-graphics-meta kde-multimedia-meta kde-system-meta kde-utilities-meta sddm sddm-kcm   # kde相关包，排除游戏和教育两个没用的</span><br><span class="line">sudo systemctl enable sddm.service   # 开机时进入sddm</span><br></pre></td></tr></table></figure>
+<p>KDE 和 sddm 的相关美化参考 wiki 即可。</p>
+<p>接下来解决中文字体和输入法，字体可以直接从Windows系统中复制，参见<a target="_blank" rel="noopener" href="https://wiki.archlinuxcn.org/wiki/%E5%BE%AE%E8%BD%AF%E5%AD%97%E4%BD%93#%E4%BD%BF%E7%94%A8_Windows_%E5%88%86%E5%8C%BA%E4%B8%AD%E7%9A%84%E5%AD%97%E4%BD%93">微软字体</a>，另外编程用的Cascadia系列虽然可以在源中找到，还是建议去github上下载，然后手动添加，因为这样可以获得字体的静态版本。</p>
+<p>输入法中 fcitx5 用着已经很舒服了。安装以下包</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">pacman -Q | grep fcitx</span><br><span class="line">fcitx5 5.0.23-2</span><br><span class="line">fcitx5-chinese-addons 5.0.17-1</span><br><span class="line">fcitx5-configtool 5.0.17-1</span><br><span class="line">fcitx5-gtk 5.0.23-1</span><br><span class="line">fcitx5-lua 5.0.10-1</span><br><span class="line">fcitx5-material-color 0.2.1-1</span><br><span class="line">fcitx5-pinyin-sougou 20210320-1  # 这个通过AUR安装</span><br><span class="line">fcitx5-pinyin-zhwiki 1:0.2.4.20230605-1</span><br><span class="line">fcitx5-qt 5.0.17-5</span><br></pre></td></tr></table></figure>
+<p>然后通过设置配置一下即可。主题的设置略复杂，参考<a target="_blank" rel="noopener" href="https://github.com/hosxy/Fcitx5-Material-Color">Fcitx5-Material-Color</a>，在配置文件中写入</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Vertical Candidate List=False</span><br><span class="line">PerScreenDPI=True</span><br><span class="line">Font=&quot;Microsoft YaHei 14&quot;</span><br><span class="line">Theme=Material-Color-Indigo</span><br></pre></td></tr></table></figure>
+
+<p>至此，终于可以把<code>/etc/locale.conf</code>改为<code>LANG=zh_CN.UTF-8</code>了。同时需在设置中更改 Region。</p>
+<h2 id="zsh"><a href="#zsh" class="headerlink" title="zsh"></a>zsh</h2><p>对于不写 shell 脚本的用户来说，bash、zsh、fish 之间区别感知并不强。我使用 zsh 的是因为它自带比 bash 更强的补全功能，并且很方便做一些简单配置。</p>
+<p>实际上 <code>Arch Linux 安装拾遗</code> 中创建新用户时就使用了 zsh 作为默认 shell，走完一遍配置界面后，已生成了 .zshrc 文件。</p>
+<p>使用 <a target="_blank" rel="noopener" href="https://github.com/romkatv/powerlevel10k">powerlevel10k</a> 代替 zsh 的 prompt。使用前确保当前终端字体已设置为 <code>Cascadia Code PL</code>，安装参照 README 即可。</p>
+<p>通过 pacman 安装 <code>zsh-syntax-highlighting</code> 包，再执行 <code>pkgfile --update</code>，完成后在 <code>.zshrc</code> 写入</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Enable fish-style syntax highlighting</span></span><br><span class="line">source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Enable <span class="string">&quot;Command Not Found&quot;</span> hook provided by pkgfile</span></span><br><span class="line">source /usr/share/doc/pkgfile/command-not-found.zsh</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Custom settings</span></span><br><span class="line">alias cls=clear</span><br></pre></td></tr></table></figure>
+<p>这时 zsh 的功能对我来说已经够用了。</p>
+<h2 id="双系统引导"><a href="#双系统引导" class="headerlink" title="双系统引导"></a>双系统引导</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo pacman -S os-prober grub-customizer</span><br><span class="line">sudo os-prober  # 自动探查Windows并添加到引导菜单中</span><br></pre></td></tr></table></figure>
+<p>grub-customizer 是一个调整 grub 设置的 GUI 程序，通过它设置 grub 的等待时间、默认启动项和主题（我使用的是Vimix）</p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>虽然没有 SWAP 不影响正常使用，但是少了又感觉缺点什么，根据 ArchWiki 配置一下就好。</p>
+<p>通过pacman安装的常用软件：chromium, clang, neofetch, cmake</p>
+<p>通过yay安装的：octopi，visual-studio-code-bin</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+  
+
+
+
+
+
+
+
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2023 cnjawi
+    
+  </p>
+</footer>
+    
+    
+  </div>
+</div>
+</body>
+</html>
