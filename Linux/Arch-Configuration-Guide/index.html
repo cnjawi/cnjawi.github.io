@@ -50,6 +50,12 @@
   <nav class="site-navigation">
     <ul>
       
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+        <li><a href="/categories">分类</a></li>
+      
     </ul>
   </nav>
 </header>
@@ -79,7 +85,9 @@
   <div class="article-content">
     <div class="entry">
       
-        <p>本篇是 <code>Arch Linux 安装拾遗</code> 的后续，记录配置新系统到可以日用状态的过程。同样是 <a target="_blank" rel="noopener" href="https://wiki.archlinuxcn.org/wiki/%E9%A6%96%E9%A1%B5">ArchWiki</a> 的一些补充，每块内容都需配合对应的 ArchWiki 章节使用。</p>
+        <p>本篇是 <a href="../Arch-Installation-Supplement/">Arch Linux 安装拾遗</a> 的后续，记录配置新系统到可以日用状态的过程。同样是 <a target="_blank" rel="noopener" href="https://wiki.archlinuxcn.org/wiki/%E9%A6%96%E9%A1%B5">ArchWiki</a> 的一些补充，每块内容都需配合对应的 ArchWiki 章节使用。</p>
+<span id="more"></span>
+
 <h2 id="软件源"><a href="#软件源" class="headerlink" title="软件源"></a>软件源</h2><p>archlinuxcn提供了很多不包括在默认源中的软件，在<code>/etc/pacman.conf</code>中添加：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[archlinuxcn]</span><br><span class="line">Server = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/$arch</span><br></pre></td></tr></table></figure>
 

@@ -1,0 +1,184 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>24点计算器 | cnjawi&#39;s blog</title>
+
+  
+  <meta name="author" content="cnjawi">
+  
+
+  
+  <meta name="description" content="personal blog site">
+  
+
+  
+  
+  <meta name="keywords" content="C++">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="24点计算器"/>
+
+  <meta property="og:site_name" content="cnjawi&#39;s blog"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="cnjawi&#39;s blog" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">cnjawi&#39;s blog</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+        <li><a href="/categories">分类</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>24点计算器</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/程序/24-Point-Calculator/" rel="bookmark">
+        <time class="entry-date published" datetime="2023-06-23T15:59:05.000Z">
+          2023-06-23
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>代码在 <a target="_blank" rel="noopener" href="https://github.com/cnjawi/Calc24">cnjawi&#x2F;Calc24</a>，本篇基本搬运自 README.md。</p>
+<span id="more"></span>
+
+<p>24点游戏的规则是从一副去掉大小王的扑克牌中抽出4张，分别对应4个数字(JQK对应11, 12, 13)，然后用这些数字进行加减乘除运算，得到24。在给定的数字之间，显然只存在数量有限的运算的组合，可以通过计算机把所有可能结果穷举出来。</p>
+<h2 id="算法"><a href="#算法" class="headerlink" title="算法"></a>算法</h2><h3 id="表达式树"><a href="#表达式树" class="headerlink" title="表达式树"></a>表达式树</h3><p>穷举所有情况的前提是可以表示出一个情况。加减乘除都是二元运算，因此可以用二叉树表示一个四则运算。在 <code>cqltr/expr.cpp</code> 中实现了可以求值和转化为中缀表达式的对象 expr，只实现了默认构造函数，通过 set() 方法设值，声明如下</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">expr</span> &#123;</span><br><span class="line">    <span class="type">float</span> val;      <span class="comment">// 数值</span></span><br><span class="line">    <span class="type">char</span> opt;       <span class="comment">// 运算符，包含 + - * / 以及表示数值节点的占位符&amp;</span></span><br><span class="line">    <span class="type">uint8_t</span> pos;    <span class="comment">// 记录取值的位置，位操作</span></span><br><span class="line">    expr* next[<span class="number">2</span>];  <span class="comment">// 左右子节点</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">expr</span>();</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">eval</span><span class="params">()</span></span>;                      <span class="comment">// 单层求值</span></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">reval</span><span class="params">()</span></span>;                     <span class="comment">// 递归求值</span></span><br><span class="line">    <span class="function">std::string <span class="title">str</span><span class="params">(<span class="type">char</span> pre = <span class="string">&#x27;+&#x27;</span>, <span class="type">bool</span> AfterSubOrDiv = <span class="literal">false</span>)</span></span>;  <span class="comment">// 递归转化为中缀表达式</span></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">set</span><span class="params">(<span class="type">char</span> operation, expr* left, expr* right)</span></span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>顺带一提，本来对象名是 <code>exp</code>，但是在用 msvc 编译时由于和某个函数重名而报错，所以改成了 <code>expr</code></p>
+<h3 id="穷举"><a href="#穷举" class="headerlink" title="穷举"></a>穷举</h3><p>这部分的代码存放在 <code>cqltr/cqltr.cpp</code> 中。</p>
+<p>把一个表达式中包含的数字数量称为这个表达式的”长度”，如 <code>1</code> 的长度为 1，<code>1+2*2</code> 的长度为 3。</p>
+<p>注意到所有长度为 2 的表达式都可以由长度为 1 的表达式合成；所有长度为 3 的表达式由长度分别为 1, 2 的表达式合成；而长度为 4 的表达式可以通过长度为 2 的表达式合成，也可以通过长度分别为 1, 3 的表达式合成。</p>
+<p>因此，要穷举出34点所有可能，可以</p>
+<ul>
+<li>将输入的四个长度为一的数字填入数组unary[4]</li>
+<li>所有深度为二的情况可以通过unary中的元素组合得到，填入数组binary[36] (有36个情况)</li>
+<li>unary和binary排列的结果即为深度为三的所有情况，填入数组ternary[864]；</li>
+<li>深度为四的算式有2+2或1+3两种可能，分别填入quad1[3780], quad2[20736]</li>
+</ul>
+<p>注意到这个过程中会出现大量重复使用同一数字的表达式，接下来考虑如何解决数字重复问题。</p>
+<p>扩充expr对象，记录表达式中所有数字的“位置”。比如输入 1 2 3 4，表达式 1+3 来自第一个数和第三个数，位置为 0101；表达式 1*4 来自第一个数和第四个数，位置为 1001。要想确定两个表达式是否重复使用了同一数字，只需比较它们位置的对应位上是否同时出现1。</p>
+<p>一个表达式的位置具有4bit信息量，而计算机中一个变量最小也有1Byte，所以如果用大小为4的数组来记录，会造成很大的空间浪费。</p>
+<p>可以用位运算来解决这个问题。每个位置可以看作一个二进制数，共有16中可能，长为4bit。用长为1Byte的uint8_t来保存位置，空间利用率从1&#x2F;8上升到1&#x2F;2。</p>
+<p>判断重复的方法正好就是按位与运算的逻辑。将两个表达式合成新的表达式时，通过按位或运算组合两个位置。</p>
+<p>这样只需在原有生成过程中增加一个判断语句即可。ternary数组大小减小到432，quad1减小到648，quad2减小到2592。</p>
+<p>当然，这么做不能避免quad1和quad2中存在一致的结果，所以在输入前还需判断一下是否存在相同的结果。</p>
+<h2 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h2><p>这部分代码存放在 <code>console/</code> 文件夹下。</p>
+<p>除计算24点这个核心功能之外，还实现了一个简易的24点游戏。由程序随机生成确保有解的四个数字，用户输入计算式，程序判断输入的计算式是否为其中一解。</p>
+<p>程序通过终端执行。用powershell打开程序所在目录，输入<code>.\cqlt help</code>打印帮助页，以下是运行示例</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="built_in">PS</span> C:\path\to\this\program&gt; ./cqlt help</span><br><span class="line">cqlt option [<span class="type">args</span>]</span><br><span class="line">options:</span><br><span class="line">  help  <span class="literal">---</span>     打印说明页</span><br><span class="line">  calc  <span class="literal">---</span>     计算<span class="number">24</span>点        [<span class="type">args</span>] : 四个[<span class="number">1</span>,<span class="number">13</span>]间的整数</span><br><span class="line">  eval  <span class="literal">---</span>     四则运算求值    [<span class="type">args</span>] : 中缀表达式(一定要用引号括起来)</span><br><span class="line">  play  <span class="literal">---</span>     <span class="number">24</span>点游戏</span><br><span class="line"></span><br><span class="line"><span class="built_in">PS</span> C:\path\to\this\program&gt; ./cqlt calc <span class="number">3</span> <span class="number">3</span> <span class="number">8</span> <span class="number">8</span></span><br><span class="line"><span class="number">8</span>/(<span class="number">3</span>-(<span class="number">8</span>/<span class="number">3</span>))</span><br><span class="line">Total: <span class="number">1</span> </span><br><span class="line"></span><br><span class="line"><span class="built_in">PS</span> C:\path\to\this\program&gt; ./cqlt play</span><br><span class="line">可用符号: + - * / ( ), 不能输入空格</span><br><span class="line">输入 <span class="keyword">exit</span> 退出, ans 获取答案</span><br><span class="line"></span><br><span class="line"><span class="number">2</span> <span class="number">7</span> <span class="number">7</span> <span class="number">8</span></span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; ans</span><br><span class="line"><span class="number">2</span>+<span class="number">7</span>+<span class="number">7</span>+<span class="number">8</span></span><br><span class="line"><span class="number">2</span>+<span class="number">8</span>+<span class="number">7</span>+<span class="number">7</span></span><br><span class="line"><span class="number">7</span>+<span class="number">2</span>+<span class="number">7</span>+<span class="number">8</span></span><br><span class="line"><span class="number">7</span>+<span class="number">7</span>+<span class="number">2</span>+<span class="number">8</span></span><br><span class="line"><span class="number">7</span>+<span class="number">8</span>+<span class="number">2</span>+<span class="number">7</span></span><br><span class="line"><span class="number">8</span>+<span class="number">2</span>+<span class="number">7</span>+<span class="number">7</span></span><br><span class="line"><span class="number">8</span>*(<span class="number">2</span>+<span class="number">7</span>/<span class="number">7</span>)</span><br><span class="line"><span class="number">8</span>+<span class="number">7</span>+<span class="number">2</span>+<span class="number">7</span></span><br><span class="line">Total: <span class="number">8</span></span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; <span class="number">2</span>+<span class="number">7</span>+<span class="number">7</span>+<span class="number">8</span></span><br><span class="line">Correct</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; <span class="keyword">exit</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">PS</span> C:\path\to\this\program&gt; ./cqlt eval <span class="string">&quot;2*(1+9/3)&quot;</span>  // eval 主要是用于调试代码的</span><br><span class="line"><span class="number">8</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h2><p>本仓库迁移自原Calc24仓库，代码有大幅改动，主要有</p>
+<ul>
+<li>将计算24点的核心功能独立为动态链接库，用C语言样式导出<code>const char* figure(int[4])</code>和<code>bool validate(int[4])</code>两个函数，分别用于求解和验证是否有解。支持通过python调用函数。</li>
+<li>代码只用到了标准库，本身与平台无关。然而先前由于使用 Visual Studio 管理项目，只能放在 Windows 下编译。现在迁移到了cmake，实现源码跨平台。</li>
+</ul>
+<p>另外用python写了一个调用编译完动态链接库的脚本，遍历所有24点可能的情况，并把结果存储在sqlite数据库中。</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/程序/">程序</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/C/">C++</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+  
+
+
+
+
+
+
+
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2023 cnjawi
+    
+  </p>
+</footer>
+    
+    
+  </div>
+</div>
+</body>
+</html>
