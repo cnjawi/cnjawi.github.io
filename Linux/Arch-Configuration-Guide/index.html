@@ -112,13 +112,12 @@
 
 <p>使用 <a target="_blank" rel="noopener" href="https://github.com/IlanCosman/tide">tide</a> 代替默认 prompt。使用前确保当前终端字体已设置为 <code>Cascadia Code PL</code>，安装参照 README 即可。</p>
 <p>执行 <code>pkgfile --update</code>，完成后在 <code>~/.config/fish/config.fish</code> 写入</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Enable <span class="string">&quot;Command Not Found&quot;</span> hook provided by pkgfile</span></span><br><span class="line">source /usr/share/doc/pkgfile/command-not-found.fish</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Custom settings</span></span><br><span class="line">alias cls=clear</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Enable <span class="string">&quot;Command Not Found&quot;</span> hook provided by pkgfile</span></span><br><span class="line">source /usr/share/doc/pkgfile/command-not-found.fish</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Custom settings</span></span><br><span class="line">alias cls=clear</span><br><span class="line">alias install=&#x27;sudo pacman -S&#x27;</span><br><span class="line">alias update=&#x27;sudo pacman -Syu&#x27;</span><br></pre></td></tr></table></figure>
 <p>这时 fish 的功能对我来说已经够用了。</p>
 <h2 id="双系统引导"><a href="#双系统引导" class="headerlink" title="双系统引导"></a>双系统引导</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo pacman -S os-prober grub-customizer</span><br><span class="line">sudo os-prober  # 自动探查Windows并添加到引导菜单中</span><br></pre></td></tr></table></figure>
 <p>grub-customizer 是一个调整 grub 设置的 GUI 程序，通过它设置 grub 的等待时间、默认启动项和主题（我使用的是Vimix）</p>
-<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>虽然没有 SWAP 不影响正常使用，但是少了又感觉缺点什么，根据 ArchWiki 配置一下就好。</p>
-<p>通过pacman安装的常用软件：chromium, clang, neofetch, cmake</p>
-<p>通过yay安装的：octopi，visual-studio-code-bin</p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>虽然不影响正常使用，但还是根据 ArchWiki 配置一下 SWAP 吧。</p>
+<p>一些常用的包：chromium, clang, neofetch, cmake, bat, htop<br>通过yay安装的：octopi，visual-studio-code-bin</p>
 
       
     </div>
